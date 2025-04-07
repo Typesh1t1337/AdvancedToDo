@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, DateTime, Enum
+from sqlalchemy import Integer, String, DateTime, Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -34,7 +34,7 @@ class SharedTask(Base):
     __tablename__ = 'shared_tasks'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    task_id: Mapped[int] = mapped_column(Integer, index=True, ForeignKey='tasks.id')
+    task_id: Mapped[int] = mapped_column(ForeignKey('tasks.id'), nullable=False)
     shared_with_user_id: Mapped[int] = mapped_column(Integer, index=True)
     permission: Mapped[Permission] = mapped_column(Enum(Permission), index=True, default=Permission.read, nullable=False)
 

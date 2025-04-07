@@ -7,8 +7,9 @@ engine = create_async_engine(
     echo=True
 )
 
-AsyncSession = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
-async def get_db():
-    async with engine.begin() as conn:
+
+async def get_db() -> AsyncSession:
+    async with async_session() as conn:
         yield conn

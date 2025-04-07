@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv("../../.env")
 
 class Dbconfig(BaseSettings):
     TASK_DB_PASSWORD: str
@@ -11,11 +11,11 @@ class Dbconfig(BaseSettings):
     def database_connection(self) -> str:
         return (
             f"postgresql+asyncpg://{self.TASK_DB_USER}:{self.TASK_DB_PASSWORD}"
-            f"@localhost:5434/{self.TASK_DB_USER}"
+            f"@tasks_postgres:5432/{self.TASK_DB_DB}"
         )
 
     class Config:
-        env_file = ".env"
+        env_file = "../../.env"
         extra = "allow"
 
 

@@ -1,7 +1,6 @@
-import pydantic
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
-load_dotenv()
+load_dotenv("../../.env")
 
 
 class DbConfig(BaseSettings):
@@ -13,11 +12,11 @@ class DbConfig(BaseSettings):
     def database_connection(self) -> str:
         return (
             f"postgresql+asyncpg://{self.AUTH_DB_USER}:{self.AUTH_DB_PASSWORD}"
-            f"@localhost:5433/{self.AUTH_DB_DB}"
+            f"@auth_postgres:5432/{self.AUTH_DB_DB}"
         )
 
     class Config:
-        env_file = ".env"
+        env_file = "../../.env"
         extra = "allow"
 
 
