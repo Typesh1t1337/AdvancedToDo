@@ -1,0 +1,106 @@
+
+services:
+  gateway:
+    container_name: api_gateway
+    ports:
+      - "8000:8000"
+    build:
+      context: ./gateway
+    volumes:
+      - ./gateway:/usr/src/app
+    networks:
+      - default
+
+
+  auth:
+    container_name: auth_microservice
+    depends_on:
+      - auth_db
+      - broker
+    ports:
+      - "8001:8001"
+    build:
+      context: ./auth
+    env_file:
+      - .env
+    volumes:
+      - ./auth:/usr/src/app
+    networks:
+      - default
+
+  auth_db:
+    container_name: auth_postgres
+    image: postgres:14
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_DB: ${AUTH_DB_DB}
+    networks:
+      - default
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+
+  tasks:
+    container_name: tasks_microservice
+    ports:
+      - "8002:8002"
+    build:
+      context: ./tasks
+    depends_on:
+      - tasks_db
+      - broker
+    env_file:
+      - .env
+    volumes:
+      - ./tasks:/usr/src/app
+    networks:
+      - default
+
+  tasks_db:
+    container_name: tasks_postgres
+    image: postgres:14
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_PASSWORD: ${TASK_DB_PASSWORD}
+      POSTGRES_USER: ${TASK_DB_USER}
+      POSTGRES_DB: ${TASK_DB_DB}
+    networks:
+      - default
+    volumes:
+      - tasks_data:/var/lib/postgresql/data
+
+
+  notifications:
+    container_name: notification
+    build:
+      context: ./notification
+    depends_on:
+      - broker
+    env_file:
+      - .env
+    volumes:
+      - ./notification:/usr/src/app
+
+
+  broker:
+    container_name: redis_broker
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - default
+
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  auth_data:
+  tasks_data:
+  redis_data:
