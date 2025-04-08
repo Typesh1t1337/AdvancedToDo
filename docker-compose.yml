@@ -12,6 +12,7 @@ services:
       - default
 
 
+
   auth:
     container_name: auth_microservice
     depends_on:
@@ -72,6 +73,22 @@ services:
     volumes:
       - tasks_data:/var/lib/postgresql/data
 
+
+  task_celery:
+    container_name: task_celery_mc
+    build:
+      context: ./tasks
+    depends_on:
+      - broker
+      - tasks_db
+      - tasks
+    networks:
+      - default
+    env_file:
+      - .env
+    volumes:
+      - ./tasks:/usr/src/app
+    command: celery -A celery_worker worker --loglevel=info
 
   notifications:
     container_name: notification

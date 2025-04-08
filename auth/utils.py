@@ -42,3 +42,4 @@ def decode_jwt(token: str):
         raise HTTPException(detail="Token is expired", status_code=401)
     except jwt.InvalidTokenError:
         raise HTTPException(detail="Token is invalid", status_code=401)
+

@@ -9,6 +9,7 @@ from sqlalchemy import or_, select
 from utils import hash_password, create_jwt_tokens, compare_password
 from dependencies import auth_required
 
+
 async def register(user: RegisterUser, db: AsyncSession = Depends(get_db)):
     username = user.username
     email = user.email
@@ -73,9 +74,16 @@ async def login(user: LoginUser, db: AsyncSession = Depends(get_db)):
     return JSONResponse(token, status_code=status.HTTP_200_OK)
 
 
-async def auth(user_id=Depends(auth_required)):
-    return JSONResponse(
-        {
-            "token": user_id,
-        }, status_code=status.HTTP_200_OK
-    )
+async def profile(user_id=Depends(auth_required), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.id == int(user_id)))
+    user = result.scalars().first()
+
+    if not user:
+        return JSONResponse(
+            {
+                "error": "User not found",
+            }, status_code=status.HTTP_404_NOT_FOUND
+        )
+
+    return user
+

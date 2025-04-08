@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from db.models import Base
 from db.database import engine
+from routes import task_router
 
 app = FastAPI()
+app.include_router(task_router.router)
 
 @app.on_event("startup")
 async def startup():

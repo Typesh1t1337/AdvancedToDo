@@ -6,13 +6,22 @@ import enum
 
 Base = declarative_base()
 
+
 class Permission(enum.Enum):
     read = "read"
     write = "write"
 
+
 class Status(enum.Enum):
     active = "active"
     inactive = "inactive"
+
+
+class Priority(enum.Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+    critical = "critical"
 
 
 class Task(Base):
@@ -22,13 +31,14 @@ class Task(Base):
     title: Mapped[str] = mapped_column(String, index=True, nullable=False)
     description: Mapped[str] = mapped_column(String, index=True, nullable=False)
     due_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    priority: Mapped[int] = mapped_column(Integer, index=True, nullable=False)
+    priority: Mapped[Priority] = mapped_column(Enum(Priority), index=True, nullable=True)
     status: Mapped[Status] = mapped_column(Enum(Status), default=Status.active, nullable=False)
-    category: Mapped[str] = mapped_column(String, index=True, nullable=False)
+    category: Mapped[str] = mapped_column(String, index=True, nullable=True)
     repeat_rule: Mapped[str] = mapped_column(String, index=True, nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, index=True, nullable=False)
 
     shared_tasks = relationship("SharedTask", back_populates="task")
+
 
 class SharedTask(Base):
     __tablename__ = 'shared_tasks'
